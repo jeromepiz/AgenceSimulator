@@ -414,12 +414,20 @@ function restartGame() {
   document.getElementById('game-container').style.display = 'none';
 }
 function saveScore(name, score, medal) {
-  const entry = { name, score, medal };
-  let scores = JSON.parse(localStorage.getItem('jeuxGereScores')) || [];
-  scores.push(entry);
-  localStorage.setItem('jeuxGereScores', JSON.stringify(scores));
-  displayScores();
+  fetch("https://script.google.com/macros/s/AKfycbzjvtoIp9X7vk5R0WzeAJa7kyQQdR5D8NyAViGVxtBQ62G0rcSqB81v0OCBx5WFQesx/exec", {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: name,
+      score: score,
+      medal: medal
+    }),
+  });
 }
+
 
 function displayScores() {
   const scores = JSON.parse(localStorage.getItem('jeuxGereScores')) || [];
@@ -431,7 +439,7 @@ function displayScores() {
 
 // Appel automatique à l'ouverture de la page
 window.onload = function () {
-  displayScores();
+
 };
 
 
