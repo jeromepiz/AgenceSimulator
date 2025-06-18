@@ -82,14 +82,10 @@
 
   <div id="role-selection">
  <img src="choix.png" alt="Choix du rôle" style="max-width: 600px; margin-bottom: 20px;"/>
-    <h2>Choisis ton rôle</h2>
+    <h2>Démarrer la partie</h2>
 
-    <button onclick="selectRole('Responsable d’agence')">Responsable d’agence</button>
-    <button onclick="selectRole('Responsable RH')">Responsable RH</button>
-    <button onclick="selectRole('Responsable QSE')">Responsable QSE</button>
-    <button onclick="selectRole('Responsable d’atelier')">Responsable d’atelier</button>
-    <button onclick="selectRole('Agent de maîtrise')">Agent de maîtrise</button>
-    <button onclick="selectRole('Chef d’équipe')">Chef d’équipe</button>
+    <button onclick="selectRole('Jeux sécurité')">Jeux sécurité</button>
+   
     <p id="role-info" style="font-weight: bold; margin-top: 15px;"></p>
     <button id="btn-start-event" onclick="startEvent()" style="display:none;">Démarrer le jeu</button>
   </div>
@@ -99,8 +95,8 @@
 
     <div style="margin-bottom: 20px;">
       <label for="reputation-bar">Réputation :</label><br/>
-      <progress id="reputation-bar" max="100" style="width: 80%; height: 20px;" value="50"></progress>
-      <p id="reputation-value">50 / 100</p>
+      <progress id="reputation-bar" max="100" style="width: 80%; height: 20px;" value="5"></progress>
+      <p id="reputation-value">5 / 100</p>
     </div>
 
     <div id="choices-container"></div>
@@ -134,9 +130,9 @@
 </div>
   <script>
   let selectedRole = "";
-  let reputation = 50;
+  let reputation = 5;
   let eventCount = 0;
-  let maxEvents = 5;
+  let maxEvents = 19;
 
 function fetchScoresFromSheet() {
   const sheetId = "1jl4RbCKiIloNUSSRavaZs4WaUMYF9coLV4HZiHY3Sss";
@@ -155,129 +151,213 @@ const url = `https://opensheet.elk.sh/${sheetId}/Feuille%201`;
 
 
   const roles = {
-    "Responsable d’agence": ["Planification stratégique", "Gestion budgétaire"],
-    "Responsable RH": ["Négociation sociale", "Gestion des conflits"],
-    "Responsable QSE": ["Analyse des risques", "Animation sécurité"],
-    "Responsable d’atelier": ["Diagnostic technique", "Gestion des pièces"],
-    "Agent de maîtrise": ["Organisation des tournées", "Suivi terrain"],
-    "Chef d’équipe": ["Encadrement des agents", "Réactivité opérationnelle"]
+    "Jeux sécurité": ["Saurez-vous avoir le score maximum ?"],
+ 
   };
 
   const eventsByRole = {
-    "Responsable d’agence": [
+    "Jeux sécurité": [
+  {
+    description: "Il commence à pleuvoir fort et le sol devient glissant autour du camion.",
+    choices: [
+      { text: "Je ralentis et adapte ma posture", effect: +5, feedback: "Adaptation logique face au risque de chute" },
+      { text: "Je me dépêche pour finir plus vite", effect: -1, feedback: "La précipitation augmente le risque de chute" },
+      { text: "Je demande au conducteur de se rapprocher à chaque point", effect: +3, feedback: "Bonne stratégie pour limiter les déplacements risqués" },
+      { text: "Je continue comme si de rien n’était", effect: -1, feedback: "Ne pas adapter son comportement est risqué" }
+    ]
+  },
 {
-  description: "Panne informatique du logiciel de planification.",
+  description: "Le lève-conteneur est défectueux et provoque des secousses violentes à chaque levée.",
   choices: [
-    { text: "Gérer manuellement les tournées", effect: +6, feedback: "Le travail est maintenu mais avec une perte de temps importante." },
-    { text: "Annuler toutes les tournées", effect: -15, feedback: "La décision provoque un chaos logistique et des plaintes clients." },
-    { text: "Réunion de crise avec les chefs", effect: +8, feedback: "Une solution temporaire est trouvée collectivement." },
-    { text: "Contacter le prestataire informatique", effect: +5, feedback: "Le problème est identifié, mais il faudra patienter." },
-    { text: "Attendre que le système revienne", effect: -5, feedback: "Les équipes sont désorganisées pendant l’attente." },
-    { text: "Utiliser un tableur Excel de secours", effect: +4, feedback: "C’est rudimentaire mais ça permet de s’en sortir." }
+    { text: "Je poursuis la tournée pour éviter le retard", effect: -2, feedback: "Poursuivre avec un équipement dangereux aggrave le risque" },
+    { text: "Je note le problème et le signale à la fin", effect: -1, feedback: "Signaler en différé est insuffisant pour un risque immédiat" },
+    { text: "Je contacte immédiatement l’encadrement", effect: +5, feedback: "Bonne gestion d’un matériel potentiellement dangereux" },
+    { text: "Je tente de réparer sommairement le système moi-même", effect: -2, feedback: "Intervention non autorisée sur matériel, danger accru" }
+  ]
+},
+  {
+    description: "En plein chargement, une benne dégage une forte odeur de brûlé.",
+    choices: [
+      { text: "Je m’éloigne et alerte immédiatement", effect: +5, feedback: "Réflexe adapté à un potentiel départ de feu" },
+      { text: "J’essaie de voir ce que c’est avant de réagir", effect: -1, feedback: "Priorité à l’évacuation en cas de fumée ou odeur suspecte" },
+      { text: "Je poursuis le compactage normalement", effect: -2, feedback: "Danger immédiat ignoré" },
+      { text: "Je demande à un collègue de vérifier pendant que je continue", effect: -1, feedback: "Le danger reste actif, mauvaise gestion du risque" }
+    ]
+  },
+  {
+    description: "Un bac déborde de sacs non conformes (gravats, ferraille, etc.).",
+    choices: [
+      { text: "Je les enlève pour alléger le bac et le vider", effect: -2, feedback: "Manipulation interdite de déchets dangereux ou lourds" },
+      { text: "Je le signale à la hiérarchie et je ne le collecte pas", effect: +5, feedback: "Bonne pratique face à un contenu interdit" },
+      { text: "Je le vide mais sans compacter ensuite", effect: -1, feedback: "Risque de blocage ou de casse matériel" },
+      { text: "Je préviens l’usager avant de le refuser", effect: +3, feedback: "Communication et consigne respectée" }
+    ]
+  },
+{
+    description: "En fin de tournée, le chauffeur propose de faire un détour non prévu pour éviter les bouchons.",
+    choices: [
+      { text: "J'accepte, c’est plus rapide", effect: -1, feedback: "Modification d’itinéraire sans autorisation = non conforme" },
+      { text: "Je vérifie s’il y a un impact sur les points de collecte", effect: +3, feedback: "Bonne vigilance sur les conséquences du changement" },
+      { text: "Je refuse, on ne dévie jamais du parcours prévu", effect: 0, feedback: "Réaction rigide, pas forcément adaptée à la situation" },
+      { text: "Je préviens l’encadrement avant de donner mon accord", effect: +5, feedback: "Conforme à la procédure en cas de modification" }
+    ]
+  },
+  {
+    description: "Un usager dépose son bac juste après votre passage et vous le signale en criant.",
+    choices: [
+      { text: "Je reviens sur mes pas pour vider le bac", effect: -1, feedback: "Revenir à pied augmente les risques routiers" },
+      { text: "Je lui explique calmement qu’il est trop tard et qu’il devra attendre la prochaine collecte", effect: +3, feedback: "Bonne communication, respect des règles" },
+      { text: "Je l’ignore et poursuis", effect: -1, feedback: "Peut générer frustration et réclamation" },
+      { text: "Je lui propose de déposer son bac plus tôt la prochaine fois et accepte de le prendre cette fois-ci", effect: +5, feedback: "Prévention et relation usager constructives" }
+    ]
+  },
+  {
+    description: "Un collègue charge les bacs sans attendre que le camion soit totalement à l’arrêt.",
+    choices: [
+      { text: "Je lui dis de faire attention sans plus", effect: -1, feedback: "Prévenir c’est bien, mais il faut aussi corriger immédiatement" },
+      { text: "Je le reprends fermement et je préviens l’encadrement", effect: +5, feedback: "Bonne réaction à une situation dangereuse" },
+      { text: "Je fais pareil pour ne pas ralentir la tournée", effect: -2, feedback: "Accumulation de risques" },
+      { text: "Je propose de prendre sa place pour qu’il se repose", effect: 1, feedback: "Bonne intention mais ne corrige pas le comportement dangereux" }
+    ]
+  },
+  {
+    description: "Un camion benne présente une fuite hydraulique en cours de tournée.",
+    choices: [
+      { text: "Je poursuis la tournée sans trop insister sur les commandes", effect: -2, feedback: "Fuite = risque mécanique et environnemental" },
+      { text: "Je préviens immédiatement pour signaler l’anomalie", effect: +5, feedback: "Bonne réaction face à une panne potentiellement grave" },
+      { text: "J’essuie la fuite pour limiter les traces au sol", effect: -1, feedback: "Le problème reste actif, action inefficace" },
+      { text: "Je déconnecte la partie hydraulique pour finir manuellement", effect: -2, feedback: "Action non autorisée, dangereuse" }
+    ]
+  },
+  {
+    description: "En début de service, tu constates que les gants mis à disposition sont troués.",
+    choices: [
+      { text: "Je commence quand même, je ferai attention", effect: -1, feedback: "Protection insuffisante = risque direct" },
+      { text: "Je signale le problème et demande une nouvelle paire", effect: +5, feedback: "Bonne gestion des EPI dès le départ" },
+      { text: "J’échange avec un collègue qui a une paire de secours", effect: +3, feedback: "Solution efficace à court terme" },
+      { text: "Je travaille à mains nues pour ne pas perdre de temps", effect: -2, feedback: "Interdit, risque de blessure ou contamination" }
+    ]
+  },
+  {
+    description: "Ton collègue oublie systématiquement de refermer la benne après chaque point de collecte.",
+    choices: [
+      { text: "Je le fais à sa place, c’est plus simple", effect: -1, feedback: "Risque de surcharge et projection si benne non fermée" },
+      { text: "Je lui rappelle l’importance de refermer à chaque fois", effect: +3, feedback: "Prévention et rappel des bonnes pratiques" },
+      { text: "Je le laisse faire, c’est son problème", effect: -1, feedback: "Ignorer une mauvaise pratique met toute l’équipe en danger" },
+      { text: "Je le signale à l’encadrement après plusieurs rappels", effect: +5, feedback: "Action conforme en cas de comportement récurrent" }
+    ]
+  },
+  {
+    description: "Un bac à roulettes est cassé et penche dangereusement.",
+    choices: [
+      { text: "Je le vide rapidement et je le repose sans le signaler", effect: -1, feedback: "Risque de chute ou blocage non traité" },
+      { text: "Je signale l’anomalie et je refuse la collecte", effect: +5, feedback: "Réaction adaptée à un matériel dangereux" },
+      { text: "Je le redresse à la main pour l’accrocher", effect: -1, feedback: "Risque de blessure musculaire" },
+      { text: "Je demande au chauffeur de m’aider à stabiliser le bac", effect: +1, feedback: "Meilleure gestion en binôme mais reste un risque" }
+    ]
+  },
+  {
+    description: "En franchissant un trottoir, tu trébuches sans gravité mais ta cheville est douloureuse.",
+    choices: [
+      { text: "Je termine la tournée, ce n’est pas grave", effect: -1, feedback: "Risque d’aggravation ou d’accident secondaire" },
+      { text: "Je préviens immédiatement mon chef d’équipe", effect: +5, feedback: "Bonne gestion des incidents corporels" },
+      { text: "Je prends une pause de 10 minutes sans rien dire", effect: -1, feedback: "Ne pas signaler un incident peut nuire à la traçabilité" },
+      { text: "Je m’auto-diagnostique et continue prudemment", effect: +1, feedback: "Réaction modérée, mais peu fiable" }
+    ]
+  },
+  {
+    description: "Un chien errant s’approche pendant que tu es derrière le camion.",
+    choices: [
+      { text: "Je reste calme et je remonte dans le camion", effect: +5, feedback: "Réflexe sûr en présence d’un animal inconnu" },
+      { text: "Je tente de le repousser avec un geste", effect: -1, feedback: "Peut aggraver la réaction de l’animal" },
+      { text: "Je le caresse pour le calmer", effect: -2, feedback: "Comportement risqué face à un animal errant" },
+      { text: "Je demande à un usager à proximité de l’éloigner", effect: +1, feedback: "Solution indirecte mais pas toujours réalisable" }
+    ]
+  },
+  {
+    description: "Un container enterré semble bloqué lors de la levée.",
+    choices: [
+      { text: "Je force un peu avec la grue pour débloquer", effect: -2, feedback: "Mauvaise pratique pouvant entraîner casse ou chute" },
+      { text: "J’arrête la manœuvre et je signale le dysfonctionnement", effect: +5, feedback: "Réaction prudente et conforme" },
+      { text: "Je redescends doucement puis retente une fois", effect: 1, feedback: "Comportement modéré, à surveiller" },
+      { text: "Je demande à mon collègue de venir voir", effect: +1, feedback: "Bonne idée d’avoir un second avis visuel" }
+    ]
+  },
+{
+  description: "Tu remarques que ton collègue porte ses chaussures de ville au lieu des chaussures de sécurité.",
+  choices: [
+    { text: "Je le préviens qu’il n’est pas équipé correctement", effect: +5, feedback: "Prévention immédiate entre collègues" },
+    { text: "Je n’interviens pas, il sait ce qu’il fait", effect: -1, feedback: "Laisser faire met en danger l’équipier" },
+    { text: "Je lui propose d’échanger nos postes", effect: -1, feedback: "Contournement du problème sans le résoudre" },
+    { text: "J’en parle au chef d’équipe dès que possible", effect: +3, feedback: "Bonne remontée d’anomalie si le collègue persiste" }
   ]
 },
 {
-  description: "Un élu local vous interpelle publiquement sur un dysfonctionnement.",
+  description: "En tournant à gauche, le chauffeur a une visibilité réduite par un arbre sur la chaussée.",
   choices: [
-    { text: "Répondre poliment et proposer un rendez-vous", effect: +10, feedback: "L’élu apprécie votre transparence et votre réactivité." },
-    { text: "Ignorer la question", effect: -10, feedback: "L’élu se plaint à la direction, image détériorée." },
-    { text: "Détourner le sujet", effect: -5, feedback: "L’élu insiste, cela provoque un malaise." },
-    { text: "L’inviter à visiter le site", effect: +8, feedback: "Il découvre les contraintes du métier et modère ses critiques." },
-    { text: "Proposer une réponse écrite", effect: +5, feedback: "Bonne initiative, mais cela manque de chaleur humaine." },
-    { text: "Se défausser sur le client", effect: -8, feedback: "L’élu transmet au client, mauvaise publicité." }
+    { text: "Je descends et je guide la manœuvre", effect: +5, feedback: "Excellente coordination pour sécuriser la manœuvre" },
+    { text: "Je lui dis de faire attention et je reste à bord", effect: -1, feedback: "Alerte verbale utile mais insuffisante dans ce cas" },
+    { text: "Je regarde avec lui depuis la cabine", effect: +1, feedback: "La visibilité reste insuffisante sans aide extérieure" },
+    { text: "Je propose de changer d’itinéraire", effect: -1, feedback: "Bonne intention mais mauvaise pratique" }
   ]
 },
 {
-  description: "Une grève est annoncée dans deux jours.",
+  description: "Tu vois un bac rempli de bouteilles en verre sans couvercle.",
   choices: [
-    { text: "Anticiper avec un plan de continuité", effect: +10, feedback: "Les services minimums sont assurés, le client est satisfait." },
-    { text: "Attendre le jour J", effect: -10, feedback: "Aucune collecte n’a lieu, c’est la panique." },
-    { text: "Communiquer avec le personnel", effect: +8, feedback: "Un climat d’échange apaise les tensions." },
-    { text: "Prévenir le client à l’avance", effect: +6, feedback: "Le client adapte sa communication en amont." },
-    { text: "Dénigrer les grévistes", effect: -15, feedback: "Cela aggrave les tensions internes." },
-    { text: "Proposer un dialogue social", effect: +5, feedback: "La grève est maintenue, mais les échanges sont constructifs." }
+    { text: "Je le vide prudemment en serrant le bord", effect: -1, feedback: "Risque de coupure élevé sans équipement adapté" },
+    { text: "Je refuse le bac et je le signale", effect: +5, feedback: "Bonne réaction face à une présentation dangereuse" },
+    { text: "Je demande à mon collègue de s’en occuper", effect: -1, feedback: "Transfert du danger à autrui" },
+    { text: "Je pose un couvercle de fortune avant de le vider", effect: +1, feedback: "Mesure partielle mais non réglementaire" }
   ]
 },
 {
-  description: "Le taux de satisfaction client est en baisse.",
+  description: "Pendant le lavage du camion, tu reçois des éclaboussures sur le visage.",
   choices: [
-    { text: "Lancer une enquête client", effect: +8, feedback: "Des retours utiles sont collectés pour améliorer le service." },
-    { text: "Ignorer les résultats", effect: -10, feedback: "Les réclamations continuent d’augmenter." },
-    { text: "Créer un comité qualité client", effect: +10, feedback: "Les chefs d’équipe se sentent impliqués et trouvent des pistes." },
-    { text: "Réunion avec les chefs d’équipe", effect: +5, feedback: "Une partie des problèmes est remontée." },
-    { text: "Blâmer les agents", effect: -8, feedback: "Cela démotive les équipes et empire la situation." },
-    { text: "Mettre à jour les indicateurs de suivi", effect: +6, feedback: "Cela permet un meilleur pilotage dans le temps." }
+    { text: "Je continue, ce n’est que de l’eau", effect: -1, feedback: "Risque de projection de produits ou résidus chimiques" },
+    { text: "J’interromps le lavage et je me rince immédiatement", effect: +5, feedback: "Réaction appropriée à une exposition potentielle" },
+    { text: "Je mets mes lunettes de sécurité et je continue", effect: +1, feedback: "Bonne idée mais un peu tard" },
+    { text: "Je me tourne pour éviter les jets suivants", effect: -1, feedback: "Réaction modérée mais temporaire" }
   ]
 },
- 
 {
-        description: "Taux d’absentéisme anormalement haut.",
-        choices: [
-          { text: "Demander une enquête interne RH ", effect: +10, feedback: "Il en ressort qu'il y a un taux anormalement haut lié à une démotivation générale des salariés" },
-          { text: "Ne pas s'en inquiéter", effect: -15, feedback: "Le taux d'absentéisme monte et descend tout seul, mais cette fois cela engendre des frais important de remplacement" },
-          { text: "Demande une réunion collective immédiate", effect: +8, feedback: "Cela permet de faire remonter un certain nombre de point bloquant" },
-          { text: "Demander des appel individuel aux salariés en arrêt ", effect: +5, feedback: "Très long et peu efficace" },
-          { text: "Réorganisation des plannings", effect: -8, feedback: "Cela ne règle rien et le taux d'intérim explose" },
-          { text: "Contacter le service médical", effect: +5, feedback: "Le service médicale fait son enquète et remonte des pistes d'amélioration dans les conditions de travail des salariés" }
-        ]
-      },  
+  description: "Un agent déverse un sac éventré sans le trier dans une benne de tri sélectif.",
+  choices: [
+    { text: "Je l’aide pour aller plus vite", effect: -1, feedback: "Mauvais geste renforcé par solidarité mal placée" },
+    { text: "Je lui rappelle les consignes de tri", effect: +1, feedback: "Bonne prévention entre collègues" },
+    { text: "Je le signale à l’encadrement", effect: +5, feedback: "Bonne action si répétition ou refus de correction" },
+    { text: "Je ne dis rien, ce n’est pas mon rôle", effect: -1, feedback: "La vigilance collective est une responsabilité partagée" }
+  ]
+},
 {
-        description: "Le client demande une réunion d’urgence.	",
-        choices: [
-          { text: "Déléguer à un chef d’équipe ", effect: +5, feedback: "Le chef d'équipe a pu entendre le client mais n'a pas pu lui apporter de réponse" },
-          { text: "Refuser la réunion car la priorité est la collecte", effect: -15, feedback: "Le client est insatisfait, il déclenche des pénalités" },
-          { text: "Préparer la réunion avec les équipes", effect: +8, feedback: "Cela permet d'anticiper plusieurs sujets et de préparer des réponses avant la réunion" },
-          { text: "S’y rendre seul", effect: +5, feedback: "Le client expose ses problématiques et vous y répondez rapidement." },
-          { text: "Proposer un compte-rendu différé", effect: +3, feedback: "Cela permet de s'assurer que les informations transmises ont bien été comprises" },
-          { text: "Proposer un plan d’action en amont", effect: +5, feedback: "Le client est rassuré, vous avez pris le sujet en main" }
-        ]
-      }, 
- 
+  description: "Tu es affecté à une tournée de nuit inhabituelle et tu te sens fatigué.",
+  choices: [
+    { text: "Je bois plusieurs cafés pour rester réveillé", effect: -1, feedback: "La caféine masque la fatigue mais ne supprime pas le risque" },
+    { text: "Je demande à être remplacé si je ne me sens pas en état", effect: +5, feedback: "Priorité à la sécurité personnelle et collective" },
+    { text: "Je réduis la vitesse pour compenser", effect: -1, feedback: "Ne traite pas la cause" },
+    { text: "Je m’isole et fais une micro-sieste sans prévenir", effect: -1, feedback: "Isolement non encadré peut poser problème" }
+  ]
+},
 {
-        description: "Trois véhicules en panne ce matin.",
-        choices: [
-          { text: "Mutualiser les tournées", effect: +5, feedback: "Bonne initiative.Cela dépanne ponctuellement" },
-          { text: "Blâmer l’atelier", effect: -10, feedback: "L'atelier est démoralisé. Ils font tout leur possible" },
-          { text: "Louer un véhicule temporaire ", effect: +8, feedback: "Cela permet de laisser le temps nécessaire aux réparations" },
-          { text: "Reporter la collecte partielle ", effect: -10, feedback: "Le client n'est pas satisfait, il déclenche une pénalité" },
-          { text: "Travailler avec l’atelier sur la prévention", effect: +5, feedback: "Cela a permis de mettre en place une maintenance préventive plus efficace, il y a moins de panne" },
-          { text: "Réaffecter les chauffeurs ", effect: +5, feedback: "Les chauffeurs concernés ont pu faire les remplacements d'absent, cela ne sera pas toujours possible" }
-        ]
-      }, 
-     {
-        description: "Plusieurs réclamations sur la propreté des rues.",
-        choices: [
-          { text: "Envoyer un audit terrain", effect: +10, feedback: "Bonne initiative." },
-          { text: "Augmenter les cadences", effect: -5, feedback: "Les équipes sont de plus en plus fatiguées" },
-          { text: "Ignorer les plaintes", effect: -15, feedback: "Le client a déclenché une pénalité" },
-          { text: "Réaliser une analyse de l'anomalie", effect: +8, feedback: "Cela a permis d'identifier une défaillance dans les circuits de collecte" },
-          { text: "Revoir les circuits ", effect: +5, feedback: "La refonte des circuits a été longue mais finalement on a trouvé l'erreur" },
-          { text: "Vérifier les pratiques avec les équipes", effect: +6, feedback: "Bien vu.L'équipage n'avait pas ces rues dans leur circuit de collecte" }
-        ]
-      },
-      {
-        description: "Le client se plaint de collectes non réalisées.",
-        choices: [
-          { text: "Envoyer une équipe d’astreinte", effect: +10, feedback: "Bonne réactivité." },
-          { text: "Reporter au lendemain", effect: -5, feedback: "Client déçu du délai." },
-          { text: "Blâmer un chef d’équipe", effect: -10, feedback: "Manque de leadership." },
-          { text: "Contacter le client pour dialogue", effect: +5, feedback: "Bonne communication." },
-          { text: "Ignorer le problème", effect: -15, feedback: "Image dégradée." },
-          { text: "Proposer un geste commercial", effect: +8, feedback: "Bien vu." }
-        ]
-      },
-      {
-        description: "Le budget maintenance est dépassé de 25 %.",
-        choices: [
-          { text: "Réduire les entretiens", effect: -10, feedback: "Risque de panne accru." },
-          { text: "Réunion avec l’atelier", effect: +10, feedback: "Bonne gestion collective." },
-          { text: "Reporter les coûts", effect: -5, feedback: "Décision risquée." },
-          { text: "Blâmer un service", effect: -10, feedback: "Tension inutile." },
-          { text: "Réviser les budgets", effect: +5, feedback: "Bonne anticipation." },
-          { text: "Informer la direction", effect: +8, feedback: "Bonne transparence." }
-        ]
-      }
-    ],
+  description: "En plein service, tu te rends compte que tu as oublié ton téléphone personnel sur ton lieu de pause.",
+  choices: [
+    { text: "Je retourne discrètement le chercher", effect: -1, feedback: "Déplacement inutile sans urgence" },
+    { text: "Je continue la tournée et j’attends la pause", effect: +5, feedback: "Bonne gestion des priorités pendant le service" },
+    { text: "Je demande au chauffeur de faire un détour", effect: -1, feedback: "Itinéraire modifié sans raison professionnelle" },
+    { text: "Je préviens le chef d'équipe pour l'avertir", effect: +1, feedback: "Réaction correcte mais dépend du contexte" }
+  ]
+},
+{
+  description: "Un riverain te signale la présence d’un nid de guêpes dans un conteneur.",
+  choices: [
+    { text: "Je le vide très vite pour éviter le danger", effect: -2, feedback: "Risque d’attaque pendant la manipulation" },
+    { text: "Je refuse de le collecter et je signale l’anomalie", effect: +5, feedback: "Bonne application du principe de précaution" },
+    { text: "Je l’arrose avec de l’eau pour les faire partir", effect: -1, feedback: "Inefficace et risqué" },
+    { text: "Je propose de repasser en fin de tournée", effect: -1, feedback: "Le problème ne sera pas résolu d'ici la" }
+  ]
+},
+
+],
+
     "Responsable RH": [
 {
   description: "Deux agents refusent de travailler ensemble.",
@@ -509,7 +589,7 @@ function startGame() {
   function selectRole(role) {
     selectedRole = role;
     document.getElementById('role-info').innerText =
-      `${role} – Compétences : ${roles[role][0]} / ${roles[role][1]}`;
+      `${role} –  : ${roles[role][0]} `;
     document.getElementById('btn-start-event').style.display = 'inline-block';
   }
 
@@ -569,11 +649,11 @@ function endGame() {
     medal = "💥 Échec total – L’agence ferme ses portes !";
     color = "darkred";
     image = "fermeture.png";
-  } else if (reputation >= 80) {
+  } else if (reputation >= 90) {
     medal = "🥇 Médaille d'OR";
     color = "gold";
     image = "podium.png";
-  } else if (reputation >= 40) {
+  } else if (reputation >= 70) {
     medal = "🥈 Médaille d'ARGENT";
     color = "silver";
     image = "podium.png";
@@ -601,10 +681,10 @@ function endGame() {
 }
 
 function restartGame() {
-  reputation = 50;
+  reputation = 5;
   eventCount = 0;
   document.getElementById('reputation-bar').value = reputation;
-  document.getElementById('reputation-value').innerText = "50 / 100";
+  document.getElementById('reputation-value').innerText = "5 / 100";
   document.getElementById('history-log').innerHTML = "";
   document.getElementById('feedback').innerHTML = "";
   document.getElementById('choices-container').innerHTML = "";
