@@ -2,36 +2,50 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Jeux Gère - Gestion Agence</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f4f4;
       padding: 30px;
       text-align: center;
+      margin: 0;
     }
+
     h1 {
       color: #2b4a6d;
+      font-size: 6vw;
+      max-width: 90%;
+      margin: auto;
     }
+
     button {
       margin: 10px;
       padding: 12px 25px;
-      font-size: 15px;
+      font-size: 4vw;
       border: none;
       border-radius: 10px;
       background-color: #4caf50;
       color: white;
       cursor: pointer;
+      max-width: 90%;
     }
+
     button:hover {
       background-color: #45a049;
     }
+
     .choice-button {
       display: block;
-      width: 80%;
+      width: 90%;
       margin: 10px auto;
     }
+
     #game-container, #role-selection {
       display: none;
       background-color: white;
@@ -40,94 +54,136 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       margin-top: 30px;
     }
+
     #journal {
       text-align: left;
       margin-top: 20px;
       background-color: #eaeaea;
       padding: 15px;
       border-radius: 10px;
+      max-width: 100%;
+      overflow-x: auto;
     }
 
-#game-container {
-  background-image: url('camion.gif');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  position: relative;
-  z-index: 1;
-}
-#game-container::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255,255,255,0.85);
-  z-index: -1;
-}
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    #game-container {
+      background-image: url('camion.gif');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      z-index: 1;
+    }
+
+    #game-container::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.85);
+      z-index: -1;
+    }
+
+    progress {
+      width: 100%;
+      height: 20px;
+    }
+
+    @media screen and (max-width: 768px) {
+      h1 {
+        font-size: 7vw;
+      }
+
+      button {
+        font-size: 5vw;
+        padding: 10px;
+      }
+
+      #feedback-box {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #feedback {
+        max-width: 90%;
+        font-size: 4vw;
+      }
+
+      #scoreboard table {
+        font-size: 4vw;
+        width: 100%;
+      }
+
+      #playerName {
+        font-size: 4vw;
+        padding: 10px;
+        width: 90%;
+      }
+    }
   </style>
 </head>
 <body>
-<div id="welcome-screen">
-  <h1>Jeux : Agence Pizzorno Simulator</h1>
-  <img alt="Titre" src="Titre.png" style="width: 600px; margin-bottom: 20px;"/>
-  <p>Choisis un mode pour commencer :</p>
-  <button onclick="startGame()">Démarrer</button>
-
-<div style="margin-top: 20px;">
-  <label for="playerName">Entrez votre nom :</label><br>
-  <input type="text" id="playerName" placeholder="Votre prénom" style="padding: 8px; font-size: 14px;">
-</div>
-</div>
+  <div id="welcome-screen">
+    <h1>Jeux : Agence Pizzorno Simulator</h1>
+    <img alt="Titre" src="Titre.png" style="margin-bottom: 20px;"/>
+    <p>Choisis un mode pour commencer :</p>
+    <button onclick="startGame()">Démarrer</button>
+    <div style="margin-top: 20px;">
+      <label for="playerName">Entrez votre nom :</label><br>
+      <input type="text" id="playerName" placeholder="Votre prénom" style="padding: 8px; font-size: 14px; width: 90%;">
+    </div>
+  </div>
 
   <div id="role-selection">
- <img src="choix.png" alt="Choix du rôle" style="max-width: 600px; margin-bottom: 20px;"/>
+    <img src="choix.png" alt="Choix du rôle" style="margin-bottom: 20px;"/>
     <h2>Démarrer la partie</h2>
-
     <button onclick="selectRole('Jeux sécurité')">Jeux sécurité</button>
-   
     <p id="role-info" style="font-weight: bold; margin-top: 15px;"></p>
     <button id="btn-start-event" onclick="startEvent()" style="display:none;">Démarrer le jeu</button>
   </div>
+
   <div id="game-container">
     <h2 id="event-title">Événement</h2>
     <p id="event-description"></p>
 
     <div style="margin-bottom: 20px;">
       <label for="reputation-bar">Réputation :</label><br/>
-      <progress id="reputation-bar" max="100" style="width: 80%; height: 20px;" value="5"></progress>
+      <progress id="reputation-bar" max="100" value="5"></progress>
       <p id="reputation-value">5 / 100</p>
     </div>
 
     <div id="choices-container"></div>
 
-<div id="feedback-box" style="display: flex; align-items: flex-start; justify-content: center; margin-top: 20px;">
-  <img src="avatar.png" alt="avatar" style="width: 80px; height: 80px; margin-right: 15px; border-radius: 50%;">
-  <div id="feedback" style="background: #ffffff; border-radius: 15px; padding: 15px; max-width: 500px; box-shadow: 2px 2px 8px rgba(0,0,0,0.2); font-weight: bold; position: relative;">
-    <span style="position: absolute; top: 10px; left: -15px; width: 0; height: 0; border-top: 10px solid transparent; border-right: 15px solid #ffffff; border-bottom: 10px solid transparent;"></span>
-  </div>
-</div>
-
+    <div id="feedback-box" style="display: flex; align-items: flex-start; justify-content: center; margin-top: 20px;">
+      <img src="avatar.png" alt="avatar" style="width: 80px; height: 80px; margin-right: 15px; border-radius: 50%;">
+      <div id="feedback" style="background: #ffffff; border-radius: 15px; padding: 15px; max-width: 500px; box-shadow: 2px 2px 8px rgba(0,0,0,0.2); font-weight: bold; position: relative;">
+        <span style="position: absolute; top: 10px; left: -15px; width: 0; height: 0; border-top: 10px solid transparent; border-right: 15px solid #ffffff; border-bottom: 10px solid transparent;"></span>
+      </div>
+    </div>
 
     <button id="next-button" onclick="startEvent()" style="display:none;">Événement suivant</button>
-<button id="restart-button" onclick="restartGame()" style="display:none;">🔁 Rejouer</button>
-
+    <button id="restart-button" onclick="restartGame()" style="display:none;">🔁 Rejouer</button>
 
     <div id="journal">
       <h3>Journal de partie</h3>
       <ul id="history-log" style="list-style-type: none; padding-left: 0;"></ul>
     </div>
   </div>
-<div id="scoreboard" style="margin-top: 30px;">
-  <h3>🏆 Tableau des scores</h3>
-  <table border="1" style="margin: auto; background: white; border-collapse: collapse;">
-    <thead>
-      <tr><th>Nom</th><th>Score</th><th>Médaille</th></tr>
-    </thead>
-    <tbody id="score-rows">
-    </tbody>
-  </table>
-</div>
+
+  <div id="scoreboard" style="margin-top: 30px;">
+    <h3>🏆 Tableau des scores</h3>
+    <table border="1" style="margin: auto; background: white; border-collapse: collapse;">
+      <thead>
+        <tr><th>Nom</th><th>Score</th><th>Médaille</th></tr>
+      </thead>
+      <tbody id="score-rows"></tbody>
+    </table>
+  </div>
   <script>
   let selectedRole = "";
   let reputation = 5;
