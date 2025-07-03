@@ -77,8 +77,8 @@
 
     <div style="margin-bottom:18px">
       <label for="reputation-bar">Réputation :</label><br/>
-      <progress id="reputation-bar" max="100" value="50"></progress>
-      <p id="reputation-value">50 / 100</p>
+      <progress id="reputation-bar" max="100" value="5"></progress>
+      <p id="reputation-value">5 / 100</p>
     </div>
 
     <div id="choices-container"></div>
@@ -109,7 +109,7 @@
 
   <script>
   /* ------ VARIABLES GLOBALES ------ */
-  let selectedRole="",reputation=50,eventCount=0,remainingEvents=[];
+  let selectedRole="",reputation=5,eventCount=0,remainingEvents=[];
 
   /* ------ DATA ------ */
   const roles={
@@ -599,10 +599,10 @@
   }
 
   function restartGame(){
-    reputation=50;eventCount=0;
+    reputation=5;eventCount=0;
     remainingEvents=[...eventsByRole[selectedRole]];
     document.getElementById('reputation-bar').value=reputation;
-    document.getElementById('reputation-value').textContent='50 / 100';
+    document.getElementById('reputation-value').textContent='5 / 100';
     document.getElementById('history-log').innerHTML='';
     document.getElementById('game-container').style.display='none';
     document.getElementById('role-selection').style.display='block';
